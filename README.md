@@ -35,7 +35,7 @@ File > Swift Packages > Add Package Dependency...
 
 # Reference Documentation
 
-There is generated [reference documentation](https://apparata.github.io/ConsoleKit/ConsoleKit/) available.
+There is generated [reference documentation](https://apparata.github.io/ConsoleKit/) available.
 
 # Features
 
