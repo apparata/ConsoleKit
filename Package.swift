@@ -7,11 +7,21 @@ let package = Package(
     platforms: [.macOS(.v10_14)],
     products: [
         .library(name: "ConsoleKit", targets: ["ConsoleKit"]),
+        .executable(name: "replexample", targets: ["replexample"])
     ],
     targets: [
         .target(
             name: "ConsoleKit",
             dependencies: [],
+            swiftSettings: [
+                .define("DEBUG", .when(configuration: .debug)),
+                .define("RELEASE", .when(configuration: .release)),
+                .define("SWIFT_PACKAGE")
+            ]
+        ),
+        .target(
+            name: "replexample",
+            dependencies: ["ConsoleKit"],
             swiftSettings: [
                 .define("DEBUG", .when(configuration: .debug)),
                 .define("RELEASE", .when(configuration: .release)),

@@ -30,7 +30,7 @@ public extension Character {
     }
         
     var isPrintable: Bool {
-        if isLetter || isNumber || isPunctuation || isSymbol || isMathSymbol || isEmoji {
+        if isLetter || isNumber || isPunctuation || isSymbol || isMathSymbol || isEmoji || isSpace {
             return true
         }
         #if macOS
@@ -39,6 +39,10 @@ public extension Character {
         }
         #endif
         return false
+    }
+    
+    var isSpace: Bool {
+        asciiValue == 32
     }
     
     var isBackspace: Bool {
