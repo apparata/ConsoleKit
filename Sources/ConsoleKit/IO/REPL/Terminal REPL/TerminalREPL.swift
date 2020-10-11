@@ -25,6 +25,8 @@ public final class TerminalREPL: REPLImplementation {
     private var putBackBuffer: String = ""
     
     private var history: CommandLineHistory
+        
+    // MARK: - Init
     
     public init(prompt: TerminalString = ">>> ",
                 maxHistoryLineCount: Int = 1000,
@@ -33,6 +35,8 @@ public final class TerminalREPL: REPLImplementation {
         self.textCompletion = textCompletion
         history = CommandLineHistory(maxLineCount: 1000)
     }
+    
+    // MARK: - Run
     
     public func run(evaluateAndPrint: @escaping Evaluator) throws {
         do {
@@ -272,6 +276,8 @@ public final class TerminalREPL: REPLImplementation {
         }
     }
     
+    // MARK: - Update Command Line
+    
     private func updateCommandLine(state: TerminalREPLState) {
         Console.write(.setPosition(row: state.startRow, column: state.startColumn))
         Console.write(.clearScreenFromCursor)
@@ -279,6 +285,8 @@ public final class TerminalREPL: REPLImplementation {
         Console.write(state.input)
         Console.write(.setPosition(row: state.row, column: state.column))
     }
+    
+    // MARK: - Read Next Character
     
     private func readNextCharacter() throws -> Character {
         guard putBackBuffer.isEmpty else {
@@ -294,6 +302,8 @@ public final class TerminalREPL: REPLImplementation {
         return character
     }
     
+    // MARK: - Put Back Character(s)
+    
     private func putBackCharacter(_ character: Character) {
         putBackBuffer.insert(character, at: putBackBuffer.startIndex)
     }
@@ -302,12 +312,16 @@ public final class TerminalREPL: REPLImplementation {
         putBackBuffer.insert(contentsOf: characters, at: putBackBuffer.startIndex)
     }
     
+    // MARK: - Clean Up
+    
     private func cleanUp() throws {
         try TerminalInputMode.reset()
         Console.write("\n")
         Console.write(.toLineStart)
         Console.flush()
     }
+    
+    // MARK: - Read Esc Sequence
     
     private func readEscapeSequence(_ character: Character) throws -> EscapeSequence? {
         guard character.isEscape else {
