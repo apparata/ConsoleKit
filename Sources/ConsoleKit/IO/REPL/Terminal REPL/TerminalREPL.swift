@@ -25,6 +25,9 @@ public final class TerminalREPL: REPLImplementation {
     private var putBackBuffer: String = ""
     
     private var history: CommandLineHistory
+    
+    private var evaluationCondition = NSCondition()
+    private var result: ReadEvaluatePrintLoopResult?
         
     // MARK: - Init
     
@@ -42,10 +45,10 @@ public final class TerminalREPL: REPLImplementation {
         do {
             try internalRun(evaluateAndPrint: evaluateAndPrint)
         } catch {
-            try cleanUp()
+            cleanUp()
             throw error
         }
-        try cleanUp()
+        cleanUp()
     }
         
     private func internalRun(evaluateAndPrint: @escaping Evaluator) throws {
@@ -75,6 +78,8 @@ public final class TerminalREPL: REPLImplementation {
                 Console.printError("")
             }
             
+            result = nil
+            
             state.prompt = prompt
             
             let (height, width) = Terminal.windowSize
@@ -90,7 +95,7 @@ public final class TerminalREPL: REPLImplementation {
 
             if character.isCtrlD {
                 // End of input
-                break
+                throw ReadEvaluatePrintLoopError.endOfInput
             }
             
             else if character.isCtrlC {
@@ -165,8 +170,22 @@ public final class TerminalREPL: REPLImplementation {
                     history.addEntry("")
                 }
                 historyIndex = 0
+
+                DispatchQueue.global(qos: .userInteractive).async {
+                    evaluateAndPrint(state.input, { [weak self] result in
+                        self?.evaluationCondition.lock()
+                        self?.result = result
+                        self?.evaluationCondition.signal()
+                        self?.evaluationCondition.unlock()
+                    })
+                }
                 
-                guard try evaluateAndPrint(state.input) == .continue else {
+                evaluationCondition.lock()
+                while result == nil {
+                    evaluationCondition.wait()
+                }
+                evaluationCondition.unlock()
+                guard case .continue = result else {
                     break
                 }
 
@@ -274,6 +293,10 @@ public final class TerminalREPL: REPLImplementation {
                         
             updateCommandLine(state: state)
         }
+        
+        if case .error(let error) = result {
+            throw error
+        }
     }
     
     // MARK: - Update Command Line
@@ -314,8 +337,14 @@ public final class TerminalREPL: REPLImplementation {
     
     // MARK: - Clean Up
     
-    private func cleanUp() throws {
-        try TerminalInputMode.reset()
+    func cleanUp() {
+        do {
+            try TerminalInputMode.reset()
+        } catch {
+            if isLogEnabled {
+                print("Error: Failed to reset terminal")
+            }
+        }
         Console.write("\n")
         Console.write(.toLineStart)
         Console.flush()

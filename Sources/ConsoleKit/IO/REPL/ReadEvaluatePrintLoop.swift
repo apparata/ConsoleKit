@@ -13,6 +13,7 @@ public enum ReadEvaluatePrintLoopError: Error {
 public enum ReadEvaluatePrintLoopResult {
     case `continue`
     case `break`
+    case error(Error)
 }
 
 internal protocol REPLImplementation {
@@ -26,12 +27,16 @@ internal protocol REPLImplementation {
          textCompletion: TextCompletion?)
 
     func run(evaluateAndPrint: @escaping ReadEvaluatePrintLoop.Evaluator) throws
+    
+    func cleanUp()
 }
 
 
 public final class ReadEvaluatePrintLoop {
-        
-    public typealias Evaluator = (String) throws -> ReadEvaluatePrintLoopResult
+    
+    public typealias Finish = (ReadEvaluatePrintLoopResult) -> Void
+    
+    public typealias Evaluator = (String, Finish) -> Void
     
     public var prompt: TerminalString {
         didSet {
@@ -66,7 +71,39 @@ public final class ReadEvaluatePrintLoop {
         }        
     }
 
-    public func run(evaluateAndPrint: @escaping Evaluator) throws {
-        try repl.run(evaluateAndPrint: evaluateAndPrint)
+    public func run(evaluateAndPrint: @escaping Evaluator) {
+        
+        let replThread = Thread { [repl] in
+            do {
+                try repl.run(evaluateAndPrint: evaluateAndPrint)
+                DispatchQueue.main.async {
+                    REPLExecution.stop()
+                    raise(SIGINT)
+                }
+            } catch let replError as ReadEvaluatePrintLoopError {
+                switch replError {
+                case .unsupportedTerminal:
+                    print("Error: Unsupported terminal")
+                    REPLExecution.stop()
+                case .endOfInput:
+                    repl.cleanUp()
+                    REPLExecution.stop()
+                case .interrupted:
+                    repl.cleanUp()
+                    exit(0)
+                }
+            } catch {
+                
+            }
+        }
+        replThread.qualityOfService = .userInteractive
+        replThread.start()
+        
+        REPLExecution.run { [repl] _ in
+            repl.cleanUp()
+            return true
+        }
+                
+        repl.cleanUp()
     }
 }

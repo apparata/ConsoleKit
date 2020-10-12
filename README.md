@@ -84,13 +84,14 @@ readEvaluatePrintLoop.textCompletion = SimpleWordCompletion(completions: [
     "whatever"
 ])
 
-try readEvaluatePrintLoop.run { input in
+readEvaluatePrintLoop.run { input, finish in
     guard !["quit", "exit"].contains(input) else {
-        return .break
+        finish(.break)
+        return
     }
     
     Console.write(terminalString: "You entered: \(input)\n")
-    return .continue
+    finish(.continue)
 }
 ```
 

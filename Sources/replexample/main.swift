@@ -11,17 +11,12 @@ readEvaluatePrintLoop.textCompletion = SimpleWordCompletion(completions: [
     "whatever"
 ])
 
-do {
-    try readEvaluatePrintLoop.run { input in
-        guard !["quit", "exit"].contains(input) else {
-            return .break
-        }
-        
-        Console.write(terminalString: "You entered: \(input)\n")
-        return .continue
+readEvaluatePrintLoop.run { input, finish in
+    guard !["quit", "exit"].contains(input) else {
+        finish(.break)
+        return
     }
-} catch {
-    #if DEBUG
-    dump(error)
-    #endif
+    
+    Console.write(terminalString: "You entered: \(input)\n")
+    finish(.continue)
 }
