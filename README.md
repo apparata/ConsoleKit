@@ -1,13 +1,11 @@
 # ConsoleKit
 
-[![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-4BC51D.svg?style=flat)](https://swift.org/package-manager/) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg) ![language Swift 5.3](https://img.shields.io/badge/language-Swift%205.3-orange.svg) ![platform macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg) ![platform Linux](https://img.shields.io/badge/platform-Linux-lightgrey.svg)
-
 The ConsoleKit framework contains various convenient utilities for making it easier to write
 terminal I/O in Swift.
 
 ## License
 
-ConsoleKit is released under the MIT license. See `LICENSE` file for more detailed information.
+ConsoleKit is released under the Zero-Clause BSD license. See `LICENSE` file for more detailed information.
 
 # Table of Contents
 
