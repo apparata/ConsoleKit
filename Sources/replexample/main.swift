@@ -16,7 +16,9 @@ readEvaluatePrintLoop.run { input, finish in
         finish(.break)
         return
     }
-    
+
     Console.write(terminalString: "You entered: \(input)\n")
     finish(.continue)
 }
+
+print("Done.")

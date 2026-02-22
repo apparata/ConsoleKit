@@ -76,10 +76,7 @@ public final class ReadEvaluatePrintLoop {
         let replThread = Thread { [repl] in
             do {
                 try repl.run(evaluateAndPrint: evaluateAndPrint)
-                DispatchQueue.main.async {
-                    REPLExecution.stop()
-                    raise(SIGINT)
-                }
+                REPLExecution.stop()
             } catch let replError as ReadEvaluatePrintLoopError {
                 switch replError {
                 case .unsupportedTerminal:

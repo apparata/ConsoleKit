@@ -26,10 +26,13 @@ public final class REPLExecution: @unchecked Sendable {
     
     private var signalSources: [DispatchSourceSignal] = []
     private let signalQueue = DispatchQueue(label: "Execution.signalhandler")
-        
-    /// Starts the main run loop and optionally installs a signal handler
+    private let semaphore = DispatchSemaphore(value: 0)
+
+    /// Blocks the calling thread and optionally installs a signal handler
     /// for the purpose of cleanup before terminating. The signal handler
     /// will be executed for `SIGINT`, `SIGHUP` and `SIGTERM`.
+    ///
+    /// Call `stop()` from any thread to unblock.
     ///
     /// - parameter signalHandler: Optional signal handler to execute before
     ///                            the program is terminated. If the signal
@@ -39,18 +42,7 @@ public final class REPLExecution: @unchecked Sendable {
         if let signalHandler = signalHandler {
             instance.signalSources = instance.installSignalHandler(signalHandler)
         }
-        var keepGoing = true
-        while keepGoing {
-            let result = CFRunLoopRunInMode(.defaultMode, 3600, false)
-            switch result {
-            case .finished:
-                keepGoing = false
-            case .stopped:
-                keepGoing = false
-            default:
-                break
-            }
-        }
+        instance.semaphore.wait()
     }
     
     /// Installs `SIGINT`, `SIGHUP`, and `SIGTERM` signal handler.
@@ -96,6 +88,6 @@ public final class REPLExecution: @unchecked Sendable {
     }
     
     public static func stop() {
-        CFRunLoopStop(CFRunLoopGetMain())
+        instance.semaphore.signal()
     }
 }
