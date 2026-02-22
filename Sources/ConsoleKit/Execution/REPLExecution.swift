@@ -1,6 +1,6 @@
 import Foundation
 
-public final class REPLExecution {
+public final class REPLExecution: @unchecked Sendable {
     
     public enum SignalType {
         /// User interrupted program, typically by pressing Ctrl-C.
@@ -19,7 +19,7 @@ public final class REPLExecution {
     ///
     /// Returns `true` if the program should exit, or `false` to keep running.
     /// The normal case would be to return `true`.
-    public typealias SignalHandler = (SignalType) -> Bool
+    public typealias SignalHandler = @Sendable (SignalType) -> Bool
     
     /// Private singleton instance.
     private static let instance = REPLExecution()

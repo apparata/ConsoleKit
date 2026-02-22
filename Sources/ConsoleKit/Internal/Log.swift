@@ -8,7 +8,7 @@ import Foundation
 import os.log
 #endif
 
-public struct EnabledLogLevels: OptionSet {
+public struct EnabledLogLevels: OptionSet, Sendable {
     public let rawValue: Int
 
     public static let debug = EnabledLogLevels(rawValue: 1 << 0)
@@ -27,15 +27,15 @@ public struct EnabledLogLevels: OptionSet {
 }
 
 #if SWIFT_PACKAGE
-public var enabledLogLevels: EnabledLogLevels = EnabledLogLevels.critical
+nonisolated(unsafe) public var enabledLogLevels: EnabledLogLevels = EnabledLogLevels.critical
 #else
-public var enabledLogLevels: EnabledLogLevels = EnabledLogLevels.all
+nonisolated(unsafe) public var enabledLogLevels: EnabledLogLevels = EnabledLogLevels.all
 #endif
 
 #if canImport(os)
 /// User of library can plug in their own OSLog object for the log here.
 /// It will be used for subsequent logging.
-public var moduleLog: OSLog? = {
+nonisolated(unsafe) public var moduleLog: OSLog? = {
     if #available(iOS 10, macOS 10.12, *) {
         return OSLog(subsystem: "se.apparata.foundation", category: "default")
     } else {

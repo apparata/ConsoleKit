@@ -4,7 +4,7 @@
 
 import Foundation
 
-public final class LineReader {
+public final class LineReader: @unchecked Sendable {
     
     private let input: Input
     

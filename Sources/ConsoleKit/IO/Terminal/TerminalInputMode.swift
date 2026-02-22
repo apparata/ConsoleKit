@@ -19,9 +19,9 @@ public final class TerminalInputMode {
         case raw
     }
     
-    public private(set) static var currentMode: Mode = .normal
+    nonisolated(unsafe) public private(set) static var currentMode: Mode = .normal
     
-    private static var normalAttributes: termios?
+    nonisolated(unsafe) private static var normalAttributes: termios?
     
     private static var isStdinTerminal: Bool {
         isatty(STDIN_FILENO) == 1

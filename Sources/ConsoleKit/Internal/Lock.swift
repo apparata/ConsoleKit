@@ -4,7 +4,7 @@
 
 import Foundation
 
-class Lock {
+class Lock: @unchecked Sendable {
     
     private let internalLock = NSLock()
     

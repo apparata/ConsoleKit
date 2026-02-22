@@ -4,7 +4,7 @@
 
 import Foundation
 
-public final class TerminalREPL: REPLImplementation {
+public final class TerminalREPL: REPLImplementation, @unchecked Sendable {
     
     public typealias Evaluator = ReadEvaluatePrintLoop.Evaluator
         
@@ -171,7 +171,7 @@ public final class TerminalREPL: REPLImplementation {
                 }
                 historyIndex = 0
 
-                DispatchQueue.global(qos: .userInteractive).async {
+                DispatchQueue.global(qos: .userInteractive).async { [state] in
                     evaluateAndPrint(state.input, { [weak self] result in
                         self?.evaluationCondition.lock()
                         self?.result = result

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public final class BasicREPL: REPLImplementation {
+public final class BasicREPL: REPLImplementation, @unchecked Sendable {
     
     var prompt: TerminalString
     

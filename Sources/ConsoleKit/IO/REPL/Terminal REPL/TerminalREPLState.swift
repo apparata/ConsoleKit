@@ -4,7 +4,7 @@
 
 import Foundation
 
-class TerminalREPLState {
+class TerminalREPLState: @unchecked Sendable {
     
     var isLogEnabled = false
     

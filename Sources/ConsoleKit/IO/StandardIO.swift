@@ -4,13 +4,13 @@
 
 import Foundation
 
-public final class StandardIO: IO {
+public final class StandardIO: IO, @unchecked Sendable {
     public let `in`: Input = StandardInput()
     public let out: Output = StandardOutput()
     public let error: Output = StandardError()
 }
 
-public final class StandardInput: Input, WrapsFileHandle {
+public final class StandardInput: Input, WrapsFileHandle, @unchecked Sendable {
     
     public let fileHandle = FileHandle.standardInput
     
@@ -94,7 +94,7 @@ public final class StandardInput: Input, WrapsFileHandle {
     }
 }
 
-public class StandardBaseOutput: Output, WrapsFileHandle {
+public class StandardBaseOutput: Output, WrapsFileHandle, @unchecked Sendable {
     
     public let fileHandle: FileHandle
     
@@ -131,14 +131,14 @@ public class StandardBaseOutput: Output, WrapsFileHandle {
     }
 }
 
-public final class StandardOutput: StandardBaseOutput {
+public final class StandardOutput: StandardBaseOutput, @unchecked Sendable {
     
     init() {
         super.init(fileHandle: FileHandle.standardOutput)
     }
 }
 
-public final class StandardError: StandardBaseOutput {
+public final class StandardError: StandardBaseOutput, @unchecked Sendable {
 
     init() {
         super.init(fileHandle: FileHandle.standardError)

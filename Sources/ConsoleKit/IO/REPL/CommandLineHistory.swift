@@ -4,7 +4,7 @@
 
 import Foundation
 
-public final class CommandLineHistory {
+public final class CommandLineHistory: @unchecked Sendable {
     
     public var lineCount: Int {
         return history.count

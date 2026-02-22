@@ -1,10 +1,10 @@
-// swift-tools-version:5.3
+// swift-tools-version:6.2
 
 import PackageDescription
 
 let package = Package(
     name: "ConsoleKit",
-    platforms: [.macOS(.v10_14)],
+    platforms: [.macOS(.v26)],
     products: [
         .library(name: "ConsoleKit", targets: ["ConsoleKit"]),
         .executable(name: "replexample", targets: ["replexample"])
@@ -19,7 +19,7 @@ let package = Package(
                 .define("SWIFT_PACKAGE")
             ]
         ),
-        .target(
+        .executableTarget(
             name: "replexample",
             dependencies: ["ConsoleKit"],
             swiftSettings: [

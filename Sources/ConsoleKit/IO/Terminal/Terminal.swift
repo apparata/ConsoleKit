@@ -9,7 +9,7 @@ import Glibc
 import Darwin.C
 #endif
 
-public enum TerminalType {
+public enum TerminalType: Sendable {
     
     /// Terminal as described by the `TERM` environment variable.
     case terminal(String)
@@ -59,7 +59,7 @@ public final class Terminal {
     /// Closure that is invoked whenever the size of the terminal window
     /// changes. Invocations are done on the main thread. The first argument
     /// represents the row count and the second argument the column count.
-    public static var windowSizeDidChange: WindowSizeDidChangeHandler? {
+    nonisolated(unsafe) public static var windowSizeDidChange: WindowSizeDidChangeHandler? {
         didSet {
             windowSizeSource?.cancel()
             windowSizeSource = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
@@ -73,12 +73,12 @@ public final class Terminal {
         }
     }
     
-    private static var windowSizeSource: DispatchSourceSignal?
+    nonisolated(unsafe) private static var windowSizeSource: DispatchSourceSignal?
     
     /// The current size of the terminal window.
     public static var windowSize: (rows: Int, columns: Int) {
-        let columns = getenv("COLUMNS").flatMap { String(validatingUTF8: $0) }
-        let rows = getenv("LINES").flatMap { String(validatingUTF8: $0) }
+        let columns = getenv("COLUMNS").flatMap { String(validatingCString: $0) }
+        let rows = getenv("LINES").flatMap { String(validatingCString: $0) }
 
         if let columns = columns, let columnCount = Int(columns),
             let rows = rows, let rowCount = Int(rows) {
@@ -95,7 +95,7 @@ public final class Terminal {
     
     /// The detected terminal type for the specified file handle.
     public static func type(fileHandle: FileHandle) -> TerminalType {
-        let terminal = getenv("TERM").flatMap { String(validatingUTF8: $0) }
+        let terminal = getenv("TERM").flatMap { String(validatingCString: $0) }
         if let terminalString = terminal?.lowercased().trimmingWhitespace() {
             if ["", "dumb", "cons25", "emacs"].contains(terminalString) {
                 return .dumb

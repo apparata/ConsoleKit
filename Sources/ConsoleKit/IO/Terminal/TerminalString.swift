@@ -4,9 +4,9 @@
 
 import Foundation
 
-public struct TerminalString: CustomStringConvertible {
+public struct TerminalString: CustomStringConvertible, Sendable {
 
-    public enum Fragment {
+    public enum Fragment: Sendable {
         case string(String)
         case terminalCode(String)
     }

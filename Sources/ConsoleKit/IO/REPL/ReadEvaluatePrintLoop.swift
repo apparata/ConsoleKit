@@ -10,16 +10,16 @@ public enum ReadEvaluatePrintLoopError: Error {
     case interrupted
 }
 
-public enum ReadEvaluatePrintLoopResult {
+public enum ReadEvaluatePrintLoopResult: Sendable {
     case `continue`
     case `break`
     case error(Error)
 }
 
-internal protocol REPLImplementation {
-        
+internal protocol REPLImplementation: Sendable {
+
     var prompt: TerminalString { get set }
-    
+
     var textCompletion: TextCompletion? { get set }
 
     init(prompt: TerminalString,
@@ -27,16 +27,16 @@ internal protocol REPLImplementation {
          textCompletion: TextCompletion?)
 
     func run(evaluateAndPrint: @escaping ReadEvaluatePrintLoop.Evaluator) throws
-    
+
     func cleanUp()
 }
 
 
 public final class ReadEvaluatePrintLoop {
     
-    public typealias Finish = (ReadEvaluatePrintLoopResult) -> Void
-    
-    public typealias Evaluator = (String, Finish) -> Void
+    public typealias Finish = @Sendable (ReadEvaluatePrintLoopResult) -> Void
+
+    public typealias Evaluator = @Sendable (String, @escaping Finish) -> Void
     
     public var prompt: TerminalString {
         didSet {
